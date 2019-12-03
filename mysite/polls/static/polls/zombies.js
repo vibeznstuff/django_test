@@ -42,10 +42,10 @@ function Survivor(id,firstname,lastname,sex,age,str,trust,health,food,immun,x,y)
         console.log("Kills :" + this.kills);
         if(this.kills >= this.levelup){
             this.level++;
-            this.levelup = this.levelup*2;
+            this.levelup = this.levelup + 5;
             this.str = Math.round(this.str*1.1);
             this.maxhealth = Math.round(this.maxhealth*1.1);
-            this.maxfood = Math.round(this.maxfood*1.05);
+            this.maxfood = Math.round(this.maxfood*1);
         };
     };
     
@@ -102,10 +102,10 @@ function Survivor(id,firstname,lastname,sex,age,str,trust,health,food,immun,x,y)
     this.fightZombie = function(zombie){
         zombie.health =
         Math.max(0,zombie.health -
-                 (this.str - Math.round((zombie.str/5))));
+                 Math.max(0,(this.str - Math.round((zombie.str/5)))));
         this.health =
         Math.max(0,this.health -
-                 (zombie.str - Math.round((this.str/3))));
+                 Math.max(0,(zombie.str - Math.round((this.str/3)))));
         if (this.health > 0){
             //console.log("Huh");
             this.rollTheDice();
@@ -217,7 +217,8 @@ function Food(food_pts,x,y){
     };
 };
 
-/*                      Team                                    team_count: Number of survivors in your team. This number is initialized to one (starting with main character).
+/*                      Team                                    
+    team_count: Number of survivors in your team. This number is initialized to one (starting with main character).
     team_health: Combined health of the team
     team_resources: Combined food that the team owns
     team_trust: Average trust of all survivors on team
@@ -399,8 +400,8 @@ function Team(){
 
 var WIDTH = 250
 var HEIGHT = 250
-var INITIAL_ZOMBIE_COUNT = 900
-var INITIAL_SURVIVOR_COUNT = 600
+var INITIAL_ZOMBIE_COUNT = 5
+var INITIAL_SURVIVOR_COUNT = 900
 var FOOD_COUNT = 450
 var CLOCK_SPEED = .25; //Percent of a second
 
@@ -562,6 +563,7 @@ function moveEntities(){
     for (i=0; i < len; i++){
         if( i < SURVIVOR_GROUP.length){
             SURVIVOR_GROUP[i].reduceCoolDown();
+            SURVIVOR_GROUP[i].consumeFood();
         }
         
         if (i < SURVIVOR_GROUP.length && SURVIVOR_GROUP[i].dead == false){
@@ -678,7 +680,8 @@ function teamCollide(x,y){
                    && SURVIVOR_GROUP[i].dead == false){
                     var add = window.confirm("A survivor asks to join you...\n" + 
                                              SURVIVOR_GROUP[i].name +
-                                             ":\n Sex: " + SURVIVOR_GROUP[i].sex +
+                                             ":\n LVL: " + SURVIVOR_GROUP[i].level + 
+                                             "\n Sex: " + SURVIVOR_GROUP[i].sex +
                                              "\n Age: " + SURVIVOR_GROUP[i].age +
                                              "\n Strength: " + SURVIVOR_GROUP[i].str +
                                              "\n Trust: " + SURVIVOR_GROUP[i].trust +
